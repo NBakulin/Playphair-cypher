@@ -8,27 +8,48 @@ import (
 	"unicode"
 )
 
+func getRuneNumber(singleRune rune) int32 {
+	if unicode.IsLetter(singleRune) {
+		var firstLetter = rune(singleRune) - rune('а')
+		return firstLetter
+	} else {
+		switch notLetterChar := singleRune; notLetterChar {
+		case ',':
+			var firstLetter int32 = 32
+			return firstLetter
+		case '-':
+			var firstLetter int32 = 33
+			return firstLetter
+		case ':':
+			var firstLetter int32 = 34
+			return firstLetter
+		case '.':
+			var firstLetter int32 = 35
+			return firstLetter
+		}
+	}
+	return 0
+}
+
 func main() {
 	file, err := os.Open("text.txt")
 	if err != nil {
-		// здесь перехватывается ошибка
 		return
 	}
 	defer file.Close()
 
-	// получить размер файла
 	fileSize, err := file.Stat()
 	if err != nil {
 		return
 	}
-	// чтение файла
+
 	bs := make([]byte, fileSize.Size())
 	_, err = file.Read(bs)
 	if err != nil {
 		return
 	}
 	inputFileString := string(bs)
-	var regex = regexp.MustCompile("[^а-яА-Я\\-,:]*")
+	var regex = regexp.MustCompile("[^а-яА-Я\\-,:.]*")
 	changedFileString := strings.Replace(regex.ReplaceAllString(inputFileString, ""), " ", "", -1)
 	var charsArray [][]int
 	changedFileString = strings.ToLower(changedFileString)
@@ -38,14 +59,11 @@ func main() {
 			charsArray[i] = append(charsArray[i], 0)
 		}
 	}
-	fmt.Println(changedFileString)
-	fmt.Println(len(changedFileString))
 	var runesArray = []rune(changedFileString)
-	for i := 0; i < len(changedFileString)/2+2; i++ {
-		if unicode.IsLetter(runesArray[i]) {
-			fmt.Println(string(runesArray[i]))
-			fmt.Println(i)
-			fmt.Println(rune(runesArray[i]) - 1072)
-		}
+	for i := 0; i < len(runesArray) - 1; i++ {
+		var firstBigrammLetter = getRuneNumber(runesArray[i])
+		i++
+		var secondBigrammLetter = getRuneNumber(runesArray[i])
+		charsArray[firstBigrammLetter][secondBigrammLetter]++
 	}
 }
