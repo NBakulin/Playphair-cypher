@@ -1,7 +1,6 @@
 package main
 
 import (
-	//"fmt"
 	"os"
 	"strings"
 	"regexp"
@@ -10,8 +9,21 @@ import (
 	"io/ioutil"
 	"encoding/json"
 )
-var frequencyArrayFileName = "frequencyArray.json"
-var txtFileName = "text.txt"
+const frequencyArrayFileName = "frequencyArray.json"
+const txtFileName = "text.txt"
+const matrixSize = 36
+func getFrequencyInPercents(frequencyArray map[int64][]int64) map[int64][]float64{
+	 frequencyPercentsArray := map[int64][]float64{}
+	 for i := 0; i < matrixSize; i++ {
+		 var oneRowPercentArray = []float64{}
+		 for j := 0; j < matrixSize; j++ {
+			 oneRowPercentArray = append(oneRowPercentArray, float64(frequencyArray[int64(i)][int64(j)]) / (float64(matrixSize*matrixSize)))
+		 }
+		 frequencyPercentsArray[int64(i)]= oneRowPercentArray
+	 }
+	 return frequencyPercentsArray
+}
+
 func readFile (fileName string) string {
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -32,24 +44,37 @@ func readFile (fileName string) string {
 	return string(bs)
 }
 
-func getRuneNumber(singleRune rune) int32 {
+func getRuneNumber(singleRune rune) int64 {
 	if unicode.IsLetter(singleRune) {
-		var firstLetter = rune(singleRune) - rune('а')
+		var firstLetter = int64(rune(singleRune) - rune('а'))
 		return firstLetter
 	} else {
 		switch notLetterChar := singleRune; notLetterChar {
 		case ',':
-			var firstLetter int32 = 32
-			return firstLetter
+			return 32
+			//'ё' letter has index 1105 (1105-1072=33)
 		case '-':
-			var firstLetter int32 = 33
-			return firstLetter
+			return 34
 		case ':':
-			var firstLetter int32 = 34
-			return firstLetter
-		case '.':
-			var firstLetter int32 = 35
-			return firstLetter
+			return 35
+		}
+	}
+	return 0
+}
+
+func getRuneByNumber(singleNumber int64) rune {
+	if unicode.IsLetter(rune(singleNumber) + rune('а')) {
+		var runeByNumber = int64(rune(singleNumber) + rune('а'))
+		return rune(runeByNumber)
+	} else {
+		switch notLetterChar := singleNumber; notLetterChar {
+		case 32:
+			return rune(',')
+			//'ё' letter has index 1105 (1105-1072=33)
+		case 34:
+			return rune('-')
+		case 35:
+			return rune(':')
 		}
 	}
 	return 0
@@ -67,15 +92,15 @@ func main() {
 	//read file
 	inputFileString := readFile(txtFileName)
 	//regex to remove non-russian letters and four other characters
-	var regex = regexp.MustCompile("[^а-яА-Я\\-,:.]*")
+	var regex = regexp.MustCompile("[^а-яА-Я\\-,:]*")
 	//apply regex on string with replacing spaces
 	changedFileString := strings.Replace(regex.ReplaceAllString(inputFileString, ""), " ", "", -1)
 	//make all lower case ones
 	changedFileString = strings.ToLower(changedFileString)
 	//initialised map for frequency analysis and inserted nulls into it
-	charsArray := map[int64][36]int64{}
-	var nullsArray [36]int64
-	for i := 0; i < 36; i++ {
+	charsArray := map[int64][matrixSize]int64{}
+	var nullsArray [matrixSize]int64
+	for i := 0; i < matrixSize; i++ {
 		charsArray[int64(i)] = nullsArray
 	}
 	//check if file exists and put there empty array if file is empty
@@ -90,17 +115,16 @@ func main() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	var jsonobject map[int64][]int64
-	json.Unmarshal(jsonfile, &jsonobject)
-	fmt.Printf("%v", jsonobject)
+	var frequencyArray map[int64][]int64
+	json.Unmarshal(jsonfile, &frequencyArray)
 
 	var runesArray = []rune(changedFileString)
 	for i := 0; i < len(runesArray) - 1; i++ {
 		var firstBigrammLetter = getRuneNumber(runesArray[i])
 		i++
 		var secondBigrammLetter = getRuneNumber(runesArray[i])
-		jsonobject[int64(firstBigrammLetter)][secondBigrammLetter]++
+		frequencyArray[firstBigrammLetter][secondBigrammLetter]++
 	}
-		fullFrequencyJson, _ := json.Marshal(jsonobject)
+		fullFrequencyJson, _ := json.Marshal(frequencyArray)
 		ioutil.WriteFile(frequencyArrayFileName, fullFrequencyJson, 0644)
 }
