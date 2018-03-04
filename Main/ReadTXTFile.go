@@ -9,22 +9,24 @@ import (
 	"io/ioutil"
 	"encoding/json"
 )
+
 const frequencyArrayFileName = "frequencyArray.json"
-const txtFileName = "text.txt"
+const txtFileName = "C:/Users/bakul/Desktop/Golang/InputFliles/text.txt"
 const matrixSize = 36
-func getFrequencyInPercents(frequencyArray map[int64][]int64) map[int64][]float64{
-	 frequencyPercentsArray := map[int64][]float64{}
-	 for i := 0; i < matrixSize; i++ {
-		 var oneRowPercentArray = []float64{}
-		 for j := 0; j < matrixSize; j++ {
-			 oneRowPercentArray = append(oneRowPercentArray, float64(frequencyArray[int64(i)][int64(j)]) / (float64(matrixSize*matrixSize)))
-		 }
-		 frequencyPercentsArray[int64(i)]= oneRowPercentArray
-	 }
-	 return frequencyPercentsArray
+
+func getFrequencyInPercents(frequencyArray map[int64][]int64) map[int64][]float64 {
+	frequencyPercentsArray := map[int64][]float64{}
+	for i := 0; i < matrixSize; i++ {
+		var oneRowPercentArray []float64
+		for j := 0; j < matrixSize; j++ {
+			oneRowPercentArray = append(oneRowPercentArray, float64(frequencyArray[int64(i)][int64(j)])/(float64(matrixSize * matrixSize)))
+		}
+		frequencyPercentsArray[int64(i)] = oneRowPercentArray
+	}
+	return frequencyPercentsArray
 }
 
-func readFile (fileName string) string {
+func readFile(fileName string) string {
 	file, err := os.Open(fileName)
 	if err != nil {
 		return ""
@@ -39,7 +41,8 @@ func readFile (fileName string) string {
 	bs := make([]byte, fileSize.Size())
 	_, err = file.Read(bs)
 	if err != nil {
-		return ""
+		fmt.Println("Read file operation error.")
+		return "Read file operation error."
 	}
 	return string(bs)
 }
@@ -89,6 +92,15 @@ func createFrequencyArrayFile() {
 }
 
 func main() {
+
+	//_, err := os.Open("C:/Users/bakul/Desktop/Golang/InputFliles/text.txt") // For read access.
+	//if err != nil {
+	//	fmt.Println("not found")
+	//	return
+	//} else {
+	//	fmt.Println("found")
+	//}
+
 	//read file
 	inputFileString := readFile(txtFileName)
 	//regex to remove non-russian letters and four other characters
@@ -119,12 +131,12 @@ func main() {
 	json.Unmarshal(jsonfile, &frequencyArray)
 
 	var runesArray = []rune(changedFileString)
-	for i := 0; i < len(runesArray) - 1; i++ {
+	for i := 0; i < len(runesArray)-1; i++ { //или -2???
 		var firstBigrammLetter = getRuneNumber(runesArray[i])
 		i++
 		var secondBigrammLetter = getRuneNumber(runesArray[i])
 		frequencyArray[firstBigrammLetter][secondBigrammLetter]++
 	}
-		fullFrequencyJson, _ := json.Marshal(frequencyArray)
-		ioutil.WriteFile(frequencyArrayFileName, fullFrequencyJson, 0644)
+	fullFrequencyJson, _ := json.Marshal(frequencyArray)
+	ioutil.WriteFile(frequencyArrayFileName, fullFrequencyJson, 0644)
 }
