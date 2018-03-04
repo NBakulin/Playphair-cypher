@@ -14,6 +14,7 @@ const frequencyArrayFileName = "frequencyArray.json"
 const txtFileName = "C:/Users/bakul/Desktop/Golang/InputFliles/text.txt"
 const matrixSize = 36
 
+//получить массив частот встречаемости каждой биграммы в процентах
 func getFrequencyInPercents(frequencyArray map[int64][]int64) map[int64][]float64 {
 	frequencyPercentsArray := map[int64][]float64{}
 	for i := 0; i < matrixSize; i++ {
@@ -25,7 +26,7 @@ func getFrequencyInPercents(frequencyArray map[int64][]int64) map[int64][]float6
 	}
 	return frequencyPercentsArray
 }
-
+//вернуть строку текста входного файла
 func readFile(fileName string) string {
 	file, err := os.Open(fileName)
 	if err != nil {
@@ -47,6 +48,7 @@ func readFile(fileName string) string {
 	return string(bs)
 }
 
+//получить номер руны
 func getRuneNumber(singleRune rune) int64 {
 	if unicode.IsLetter(singleRune) {
 		var firstLetter = int64(rune(singleRune) - rune('а'))
@@ -65,6 +67,7 @@ func getRuneNumber(singleRune rune) int64 {
 	return 0
 }
 
+//получить руну по её номеру
 func getRuneByNumber(singleNumber int64) rune {
 	if unicode.IsLetter(rune(singleNumber) + rune('а')) {
 		var runeByNumber = int64(rune(singleNumber) + rune('а'))
@@ -83,6 +86,7 @@ func getRuneByNumber(singleNumber int64) rune {
 	return 0
 }
 
+//создать файл для хранения частотной матрицы
 func createFrequencyArrayFile() {
 	file, err := os.Create(frequencyArrayFileName)
 	if err != nil {
@@ -91,24 +95,17 @@ func createFrequencyArrayFile() {
 	defer file.Close()
 }
 
-func main() {
-
-	//_, err := os.Open("C:/Users/bakul/Desktop/Golang/InputFliles/text.txt") // For read access.
-	//if err != nil {
-	//	fmt.Println("not found")
-	//	return
-	//} else {
-	//	fmt.Println("found")
-	//}
-
-	//read file
-	inputFileString := readFile(txtFileName)
+func formatInputString(inputString string) string {
 	//regex to remove non-russian letters and four other characters
 	var regex = regexp.MustCompile("[^а-яА-Я\\-,:]*")
 	//apply regex on string with replacing spaces
-	changedFileString := strings.Replace(regex.ReplaceAllString(inputFileString, ""), " ", "", -1)
+	changedFileString := strings.Replace(regex.ReplaceAllString(inputString, ""), " ", "", -1)
 	//make all lower case ones
 	changedFileString = strings.ToLower(changedFileString)
+	return changedFileString
+}
+
+func writeFrequencyArrayToFile(changedFileString string){
 	//initialised map for frequency analysis and inserted nulls into it
 	charsArray := map[int64][matrixSize]int64{}
 	var nullsArray [matrixSize]int64
@@ -122,16 +119,9 @@ func main() {
 		ioutil.WriteFile(frequencyArrayFileName, emptyFrequencyJson, 0644)
 	}
 	//reads json from file
-	jsonfile, err := ioutil.ReadFile(frequencyArrayFileName)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	var frequencyArray map[int64][]int64
-	json.Unmarshal(jsonfile, &frequencyArray)
-
+	var frequencyArray = getbigrammMapFromFile(frequencyArrayFileName)
 	var runesArray = []rune(changedFileString)
-	for i := 0; i < len(runesArray)-1; i++ { //или -2???
+	for i := 0; i < len(runesArray)-1; i++ {
 		var firstBigrammLetter = getRuneNumber(runesArray[i])
 		i++
 		var secondBigrammLetter = getRuneNumber(runesArray[i])
@@ -139,4 +129,25 @@ func main() {
 	}
 	fullFrequencyJson, _ := json.Marshal(frequencyArray)
 	ioutil.WriteFile(frequencyArrayFileName, fullFrequencyJson, 0644)
+
+}
+
+func getbigrammMapFromFile(fileName string) map[int64][]int64 {
+	jsonfile, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+	var frequencyArray map[int64][]int64
+	json.Unmarshal(jsonfile, &frequencyArray)
+	return frequencyArray
+}
+
+func main() {
+	//read file
+	inputFileString := readFile(txtFileName)
+	var changedFileString = formatInputString(inputFileString)
+	writeFrequencyArrayToFile(changedFileString)
+	var frequencyInPercents = getFrequencyInPercents(getbigrammMapFromFile(frequencyArrayFileName))
+	fmt.Println(frequencyInPercents)
 }
