@@ -1,37 +1,24 @@
 package main
 
 import (
-	//"os"
-	//"strings"
-	//"fmt"
-	//"io/ioutil"
-	//"encoding/json"
+
 )
-//func main() {
-	//inputFileString := readFile(cypherFile)
-	//var changedFileString = strings.ToLower(inputFileString)
-	//charsArray := map[int64][matrixSize]int64{}
-	//var nullsArray [matrixSize]int64
-	//for i := 0; i < matrixSize; i++ {
-	//	charsArray[int64(i)] = nullsArray
+func main() {// fitnessFunction(mapOfMaps map[int64]map[int64][]int64)
+	//var mapOfMapsWithTheirValues map[int64]map[int64]map[int64][]int64
+	//for i := 0; i < len(mapOfMaps)-1; i++ {
+	//	mapOfMapsWithTheirValues[int64(i)][0] = getArrayValue(mapOfMaps[int64(i)])
+	//	var frequencyInPercents = getFrequencyInPercents(mapOfMaps[int64(i)])
 	//}
-	////check if file exists and put there empty array if file is empty
-	////reads json from file
-	//jsonfile, err := ioutil.ReadFile(frequencyArrayFileName)
-	//if err != nil {
-	//	fmt.Println(err)
-	//	os.Exit(1)
-	//}
-	//var jsonobject map[int64][]int64
-	//json.Unmarshal(jsonfile, &jsonobject)
-	//
-	//var runesArray = []rune(changedFileString)
-	//for i := 0; i < len(runesArray) - 1; i++ {
-	//	var firstBigrammLetter = getRuneNumber(runesArray[i])
-	//	i++
-	//	var secondBigrammLetter = getRuneNumber(runesArray[i])
-	//	jsonobject[int64(firstBigrammLetter)][secondBigrammLetter]++
-	//}
-	//fullFrequencyJson, _ := json.Marshal(jsonobject)
-	//ioutil.WriteFile(frequencyArrayFileName, fullFrequencyJson, 0644)
-//}
+}
+
+func getArrayValue(frequencyInPercents map[int64][]float64) float64 {
+	var fullArrayValue float64
+	for i := 0; i < matrixSize; i++ {
+		var rowValue float64
+		for j := 0; j < matrixSize; j++ {
+			rowValue += float64(frequencyInPercents[int64(i)][int64(j)])
+		}
+		fullArrayValue += rowValue
+	}
+	return fullArrayValue
+}

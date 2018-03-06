@@ -105,7 +105,7 @@ func formatInputString(inputString string) string {
 	return changedFileString
 }
 
-func writeFrequencyArrayToFile(changedFileString string){
+func getFrequencyArray(changedFileString string) map[int64][]int64{
 	//initialised map for frequency analysis and inserted nulls into it
 	charsArray := map[int64][matrixSize]int64{}
 	var nullsArray [matrixSize]int64
@@ -127,8 +127,7 @@ func writeFrequencyArrayToFile(changedFileString string){
 		var secondBigrammLetter = getRuneNumber(runesArray[i])
 		frequencyArray[firstBigrammLetter][secondBigrammLetter]++
 	}
-	fullFrequencyJson, _ := json.Marshal(frequencyArray)
-	ioutil.WriteFile(frequencyArrayFileName, fullFrequencyJson, 0644)
+	return frequencyArray
 
 }
 
@@ -147,7 +146,11 @@ func main() {
 	//read file
 	inputFileString := readFile(txtFileName)
 	var changedFileString = formatInputString(inputFileString)
-	writeFrequencyArrayToFile(changedFileString)
-	var frequencyInPercents = getFrequencyInPercents(getbigrammMapFromFile(frequencyArrayFileName))
+	var frequencyArray = getFrequencyArray(changedFileString)
+	fullFrequencyJson, _ := json.Marshal(frequencyArray)
+	ioutil.WriteFile(frequencyArrayFileName, fullFrequencyJson, 0644)
+	var frequencyInPercents = getFrequencyInPercents(frequencyArray)
 	fmt.Println(frequencyInPercents)
+	var value = getArrayValue(frequencyInPercents)
+	fmt.Println(value)
 }
