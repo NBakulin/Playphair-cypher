@@ -92,6 +92,6 @@ func decrypt() string {
 	fmt.Println(outputString)
 	return outputString
 }
-func main() {
+func main1() {
 	decrypt()
 }

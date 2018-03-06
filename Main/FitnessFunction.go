@@ -3,7 +3,7 @@ package main
 import (
 
 )
-func main() {// fitnessFunction(mapOfMaps map[int64]map[int64][]int64)
+func main2() {// fitnessFunction(mapOfMaps map[int64]map[int64][]int64)
 	//var mapOfMapsWithTheirValues map[int64]map[int64]map[int64][]int64
 	//for i := 0; i < len(mapOfMaps)-1; i++ {
 	//	mapOfMapsWithTheirValues[int64(i)][0] = getArrayValue(mapOfMaps[int64(i)])
@@ -21,4 +21,16 @@ func getArrayValue(frequencyInPercents map[int64][]float64) float64 {
 		fullArrayValue += rowValue
 	}
 	return fullArrayValue
+}
+
+func getArraySum(frequencyInPercents map[int64][]int64) int64 {
+	var fullArraySum int64
+	for i := 0; i < matrixSize; i++ {
+		var rowSum int64
+		for j := 0; j < matrixSize; j++ {
+			rowSum += int64(frequencyInPercents[int64(i)][int64(j)])
+		}
+		fullArraySum += rowSum
+	}
+	return fullArraySum
 }

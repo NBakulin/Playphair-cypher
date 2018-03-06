@@ -10,17 +10,18 @@ import (
 	"encoding/json"
 )
 
-const frequencyArrayFileName = "frequencyArray.json"
+const frequencyArrayFileName = "C:/Users/bakul/Desktop/Golang/OutputFiles/frequencyArray.json"
 const txtFileName = "C:/Users/bakul/Desktop/Golang/InputFliles/text.txt"
 const matrixSize = 36
 
 //получить массив частот встречаемости каждой биграммы в процентах
 func getFrequencyInPercents(frequencyArray map[int64][]int64) map[int64][]float64 {
+	var arraySum = getArraySum(frequencyArray)
 	frequencyPercentsArray := map[int64][]float64{}
 	for i := 0; i < matrixSize; i++ {
 		var oneRowPercentArray []float64
 		for j := 0; j < matrixSize; j++ {
-			oneRowPercentArray = append(oneRowPercentArray, float64(frequencyArray[int64(i)][int64(j)])/(float64(matrixSize * matrixSize)))
+			oneRowPercentArray = append(oneRowPercentArray, float64(frequencyArray[int64(i)][int64(j)])/float64(arraySum)*100)
 		}
 		frequencyPercentsArray[int64(i)] = oneRowPercentArray
 	}
