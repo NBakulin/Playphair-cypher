@@ -10,23 +10,6 @@ import (
 	"encoding/json"
 )
 
-const frequencyArrayFileName = "C:/Users/bakul/Desktop/Golang/OutputFiles/frequencyArray.json"
-const txtFileName = "C:/Users/bakul/Desktop/Golang/InputFliles/text.txt"
-const matrixSize = 36
-
-//получить массив частот встречаемости каждой биграммы в процентах
-func getFrequencyInPercents(frequencyArray map[int64][]int64) map[int64][]float64 {
-	var arraySum = getArraySum(frequencyArray)
-	frequencyPercentsArray := map[int64][]float64{}
-	for i := 0; i < matrixSize; i++ {
-		var oneRowPercentArray []float64
-		for j := 0; j < matrixSize; j++ {
-			oneRowPercentArray = append(oneRowPercentArray, float64(frequencyArray[int64(i)][int64(j)])/float64(arraySum)*100)
-		}
-		frequencyPercentsArray[int64(i)] = oneRowPercentArray
-	}
-	return frequencyPercentsArray
-}
 //вернуть строку текста входного файла
 func readFile(fileName string) string {
 	file, err := os.Open(fileName)
@@ -106,13 +89,9 @@ func formatInputString(inputString string) string {
 	return changedFileString
 }
 
-func getFrequencyArray(changedFileString string) map[int64][]int64{
+func getFrequencyArrayFromFile(changedFileString string) map[int64][]int64{
 	//initialised map for frequency analysis and inserted nulls into it
-	charsArray := map[int64][matrixSize]int64{}
-	var nullsArray [matrixSize]int64
-	for i := 0; i < matrixSize; i++ {
-		charsArray[int64(i)] = nullsArray
-	}
+	var charsArray = createEmptyBigrammArray()
 	//check if file exists and put there empty array if file is empty
 	if readFile(frequencyArrayFileName) == "" {
 		createFrequencyArrayFile()
@@ -120,7 +99,7 @@ func getFrequencyArray(changedFileString string) map[int64][]int64{
 		ioutil.WriteFile(frequencyArrayFileName, emptyFrequencyJson, 0644)
 	}
 	//reads json from file
-	var frequencyArray = getbigrammMapFromFile(frequencyArrayFileName)
+	var frequencyArray = getBigrammMapFromFile(frequencyArrayFileName)
 	var runesArray = []rune(changedFileString)
 	for i := 0; i < len(runesArray)-1; i++ {
 		var firstBigrammLetter = getRuneNumber(runesArray[i])
@@ -129,10 +108,35 @@ func getFrequencyArray(changedFileString string) map[int64][]int64{
 		frequencyArray[firstBigrammLetter][secondBigrammLetter]++
 	}
 	return frequencyArray
-
 }
 
-func getbigrammMapFromFile(fileName string) map[int64][]int64 {
+func createEmptyBigrammArray() map[int64][]int64{
+	frequencyArray := map[int64][]int64{}
+	var nullsArray []int64
+	for i := 0; i < int(matrixSize); i++ {
+		nullsArray = append(nullsArray, 0)
+	}
+	for i := 0; i < int(matrixSize); i++ {
+		frequencyArray[int64(i)] = nullsArray
+	}
+	return frequencyArray
+}
+
+func getFrequencyArray(changedFileString string) map[int64][]int64 {
+	//reads json from file
+	var frequencyArray = createEmptyBigrammArray()
+	var runesArray= []rune(changedFileString)
+	for i := 0; i < len(runesArray)-1; i++ {
+		var firstBigrammLetter= getRuneNumber(runesArray[i])
+		i++
+		var secondBigrammLetter= getRuneNumber(runesArray[i])
+		frequencyArray[firstBigrammLetter][secondBigrammLetter]++
+	}
+	return frequencyArray
+}
+
+//получить карту биграмм на основе json файла
+func getBigrammMapFromFile(fileName string) map[int64][]int64 {
 	jsonfile, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		fmt.Println(err)
@@ -143,15 +147,15 @@ func getbigrammMapFromFile(fileName string) map[int64][]int64 {
 	return frequencyArray
 }
 
-func main() {
+func main132() {
 	//read file
 	inputFileString := readFile(txtFileName)
 	var changedFileString = formatInputString(inputFileString)
-	var frequencyArray = getFrequencyArray(changedFileString)
+	var frequencyArray = getFrequencyArrayFromFile(changedFileString)
 	fullFrequencyJson, _ := json.Marshal(frequencyArray)
 	ioutil.WriteFile(frequencyArrayFileName, fullFrequencyJson, 0644)
 	var frequencyInPercents = getFrequencyInPercents(frequencyArray)
 	fmt.Println(frequencyInPercents)
-	var value = getArrayValue(frequencyInPercents)
+	var value = getArrayValue(frequencyInPercents, frequencyInPercents)
 	fmt.Println(value)
 }
