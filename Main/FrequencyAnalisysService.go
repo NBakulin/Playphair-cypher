@@ -34,14 +34,15 @@ func readFile(fileName string) string {
 
 //получить номер руны
 func getRuneNumber(singleRune rune) int64 {
-	if unicode.IsLetter(singleRune) {
+	if unicode.IsLetter(singleRune) && rune(singleRune) >= rune('а') && rune(singleRune) <= rune('я') {
 		var firstLetter = int64(rune(singleRune) - rune('а'))
 		return firstLetter
 	} else {
 		switch notLetterChar := singleRune; notLetterChar {
 		case ',':
 			return 32
-			//'ё' letter has index 1105 (1105-1072=33)
+		case 'ё':
+			return 33
 		case '-':
 			return 34
 		case ':':
@@ -53,14 +54,15 @@ func getRuneNumber(singleRune rune) int64 {
 
 //получить руну по её номеру
 func getRuneByNumber(singleNumber int64) rune {
-	if unicode.IsLetter(rune(singleNumber) + rune('а')) {
+	if unicode.IsLetter(rune(singleNumber) + rune('а')) && rune(singleNumber) >= 0 && rune(singleNumber) <= 31 {
 		var runeByNumber = int64(rune(singleNumber) + rune('а'))
 		return rune(runeByNumber)
 	} else {
 		switch notLetterChar := singleNumber; notLetterChar {
 		case 32:
 			return rune(',')
-			//'ё' letter has index 1105 (1105-1072=33)
+		case 33:
+			return rune('ё')
 		case 34:
 			return rune('-')
 		case 35:
@@ -112,11 +114,23 @@ func getFrequencyArrayFromFile(changedFileString string) map[int64][]int64{
 
 func createEmptyBigrammArray() map[int64][]int64{
 	frequencyArray := map[int64][]int64{}
-	var nullsArray []int64
 	for i := 0; i < int(matrixSize); i++ {
-		nullsArray = append(nullsArray, 0)
+		var nullsArray []int64
+		for i := 0; i < int(matrixSize); i++ {
+			nullsArray = append(nullsArray, 0)
+		}
+		frequencyArray[int64(i)] = nullsArray
 	}
-	for i := 0; i < int(matrixSize); i++ {
+	return frequencyArray
+}
+
+func createEmptyKey() map[int64][]int64{
+	frequencyArray := map[int64][]int64{}
+	for i := 0; i < int(keySize); i++ {
+		var nullsArray []int64
+		for i := 0; i < int(keySize); i++ {
+			nullsArray = append(nullsArray, -1)
+		}
 		frequencyArray[int64(i)] = nullsArray
 	}
 	return frequencyArray
