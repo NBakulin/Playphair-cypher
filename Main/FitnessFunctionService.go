@@ -87,7 +87,7 @@ func swap(key map[int64][]int64) map[int64][]int64 {
 
 func bigMutation(individualsArray IndividualsArray,frequencyFromFile map[int64][]float64) {
 
-	for i := individualsCount - individualsCount/4; i < individualsCount; i++ {
+	for i := individualsCount - individualsCount/20; i < individualsCount; i++ {
 		var parentKey = createParent()
 		var individual Individual
 		var decryptedString = decrypt(parentKey)
@@ -96,7 +96,7 @@ func bigMutation(individualsArray IndividualsArray,frequencyFromFile map[int64][
 		individual.key = parentKey
 		individualsArray[i] = individual
 	}
-	for i := 1; i < individualsCount - individualsCount/4; i++ {
+	for i := 0; i < individualsCount - individualsCount/20; i++ {
 		individualsArray[i].key = swap(individualsArray[i].key)
 		var decryptedString = decrypt(individualsArray[i].key)
 		var frequencyArray = getFrequencyArray(decryptedString)

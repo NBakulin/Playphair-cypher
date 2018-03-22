@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"sort"
 	"fmt"
+	"math"
 )
 
 func main() {
@@ -42,24 +43,26 @@ func main() {
 		for {
 			sort.Sort(individualsArray)
 			updatePopulation(individualsArray, frequencyFromFile)
-			if bestIndivid > individualsArray[0].value {
-				bestIndivid = individualsArray[0].value
+			if bestIndivid != individualsArray[0].value {
+			   bestIndivid = individualsArray[0].value
 			   counter = 0
 			} else {
 			   counter++
 			}
-			if counter > 3 {
+			if math.Mod(float64(counter), 15) == 0 {
+				cleanPoppulation(individualsArray, frequencyFromFile)
+				fmt.Println(individualsArray[0].value)
+				fmt.Println(decrypt(individualsArray[0].key))
+			}
+			if math.Mod(float64(counter), 25) == 0 {
 				mutate(individualsArray, frequencyFromFile)
 			}
-			if counter > 8 {
+			if counter > 200 {
 				bigMutation(individualsArray, frequencyFromFile)
-			}
-			if counter > 20 {
-				cleanPoppulation(individualsArray, frequencyFromFile)
 				counter = 0
 			}
-			fmt.Println(individualsArray[0].value)
-			if individualsArray[0].value < 30 {
+			if individualsArray[0].value < 50 {
+				fmt.Println(decrypt(individualsArray[0].key))
 				break
 			}
 			microSwap(individualsArray, frequencyFromFile)
