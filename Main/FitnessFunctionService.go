@@ -63,7 +63,6 @@ func updatePopulation(individualsArray IndividualsArray,frequencyFromFile map[in
 		var parentKey = hatchIndividualKey(individualsArray[i].key, individualsArray[i+ randomValue].key)
 		var individual Individual
 		var decryptedString = decrypt(parentKey)
-		//косяк!!!
 		var frequencyArray = getFrequencyArray(decryptedString)
 		//здесь нужно получить массив биграмм декодированного сообщения и передать его в нижнюю функцию
 		individual.value = getArrayValue(getFrequencyInPercents(frequencyArray), frequencyFromFile)
