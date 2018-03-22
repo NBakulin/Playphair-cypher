@@ -54,11 +54,12 @@ func main() {
 			if counter > 8 {
 				bigMutation(individualsArray, frequencyFromFile)
 			}
-			if counter > 14 {
+			if counter > 20 {
 				cleanPoppulation(individualsArray, frequencyFromFile)
+				counter = 0
 			}
 			fmt.Println(individualsArray[0].value)
-			if individualsArray[0].value < 50 {
+			if individualsArray[0].value < 30 {
 				break
 			}
 			microSwap(individualsArray, frequencyFromFile)

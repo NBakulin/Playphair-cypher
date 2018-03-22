@@ -6,32 +6,6 @@ import (
 	"math/rand"
 )
 
-//создать потомка
-//func hatchIndividualKey(individual1 map[int64][]int64/*, individual2 map[int64][]int64*/) map[int64][]int64 {
-//	var randomValue= rand.Intn(int(keySize))
-//	var emptyKeyPart []int64
-//	for i := randomValue; i < int(keySize); i++ {
-//		emptyKeyPart = append(emptyKeyPart, -1)
-//		for j := 0; j < int(keySize); j++ {
-//			individual1[int64(i)][int64(j)] = -1
-//		}
-//	}
-//	for i := randomValue; i < int(keySize); i++ {
-//		for j := 0; j < int(keySize); j++ {
-//			for {
-//				var randomValue= rand.Intn(int(matrixSize))
-//				if !contains(individual1, int64(randomValue)) {
-//					individual1[int64(i)][int64(j)] = int64(randomValue)
-//					break
-//				}
-//				if individual1[int64(i)][keySize - 1] != -1 {
-//					break
-//				}
-//			}
-//		}
-//	}
-//	return individual1
-//}
 func countRuneAmount(individual map[int64][]int64, number int64) int64 {
 	var counter int64 = 0
 	for i := 0; i < int(keySize); i++ {
@@ -47,7 +21,6 @@ func countRuneAmount(individual map[int64][]int64, number int64) int64 {
 
 func findFirst(individual map[int64][]int64, number int64) (int64, int64) {
 	for i := 0; i < int(keySize); i++ {
-		//emptyKeyPart = append(emptyKeyPart, -1)
 		for j := 0; j < int(keySize); j++ {
 			if individual[int64(i)][int64(j)] == number {
 				return int64(i), int64(j)
@@ -61,7 +34,6 @@ func hatchIndividualKey(individual1 map[int64][]int64, individual2 map[int64][]i
 	var randomValue = rand.Intn(int(matrixSize))
 	var emptyKeyPart = createEmptyKey()
 	for i := 0; i < int(keySize); i++ {
-		//emptyKeyPart = append(emptyKeyPart, -1)
 		for j := 0; j < int(keySize); j++ {
 			if (i*6+j) <  randomValue {
 				emptyKeyPart[int64(i)][int64(j)] = individual1[int64(i)][int64(j)]
@@ -87,7 +59,7 @@ func hatchIndividualKey(individual1 map[int64][]int64, individual2 map[int64][]i
 func updatePopulation(individualsArray IndividualsArray,frequencyFromFile map[int64][]float64) {
 
 	for i := 0; i < individualsCount/2; i++ {
-		var randomValue = rand.Intn(int(individualsCount/8))
+		var randomValue = rand.Intn(int(individualsCount/3))
 		var parentKey = hatchIndividualKey(individualsArray[i].key, individualsArray[i+ randomValue].key)
 		var individual Individual
 		var decryptedString = decrypt(parentKey)
@@ -116,22 +88,19 @@ func swap(key map[int64][]int64) map[int64][]int64 {
 
 func bigMutation(individualsArray IndividualsArray,frequencyFromFile map[int64][]float64) {
 
-	for i := individualsCount - individualsCount/2; i < individualsCount; i++ {
+	for i := individualsCount - individualsCount/4; i < individualsCount; i++ {
 		var parentKey = createParent()
 		var individual Individual
 		var decryptedString = decrypt(parentKey)
-		//косяк!!!
 		var frequencyArray = getFrequencyArray(decryptedString)
-		//здесь нужно получить массив биграмм декодированного сообщения и передать его в нижнюю функцию
 		individual.value = getArrayValue(getFrequencyInPercents(frequencyArray), frequencyFromFile)
 		individual.key = parentKey
 		individualsArray[i] = individual
 	}
-	for i := 1; i < individualsCount - individualsCount/2; i++ {
+	for i := 1; i < individualsCount - individualsCount/4; i++ {
 		individualsArray[i].key = swap(individualsArray[i].key)
 		var decryptedString = decrypt(individualsArray[i].key)
 		var frequencyArray = getFrequencyArray(decryptedString)
-		//здесь нужно получить массив биграмм декодированного сообщения и передать его в нижнюю функцию
 		individualsArray[i].value = getArrayValue(getFrequencyInPercents(frequencyArray), frequencyFromFile)
 	}
 	sort.Sort(individualsArray)
@@ -139,12 +108,12 @@ func bigMutation(individualsArray IndividualsArray,frequencyFromFile map[int64][
 }
 
 func microSwap(individualsArray IndividualsArray,frequencyFromFile map[int64][]float64) {
-	for i := 1; i < 3; i++ {
-		var i1 = rand.Intn(int(keySize))
-		var j1 = rand.Intn(int(keySize))
-		var i2 = rand.Intn(int(keySize))
-		var j2 = rand.Intn(int(keySize))
-		var key= map[int64][]int64{}
+	for i := 1; i < int(keySize - 1); i++ {
+		var i1= rand.Intn(int(keySize))
+		var j1= rand.Intn(int(keySize))
+		var i2= rand.Intn(int(keySize))
+		var j2= rand.Intn(int(keySize))
+		var key = map[int64][]int64{}
 		for i := 0; i < int(keySize); i++ {
 			var arr []int64
 			for j := 0; j < int(keySize); j++ {
@@ -156,7 +125,6 @@ func microSwap(individualsArray IndividualsArray,frequencyFromFile map[int64][]f
 		individualsArray[individualsCount-i].key[int64(i1)][j1], individualsArray[individualsCount-i].key[int64(i2)][j2] = individualsArray[individualsCount-i].key[int64(i2)][j2], individualsArray[individualsCount-i].key[int64(i1)][j1]
 		var decryptedString= decrypt(individualsArray[individualsCount-1].key)
 		var frequencyArray= getFrequencyArray(decryptedString)
-		//здесь нужно получить массив биграмм декодированного сообщения и передать его в нижнюю функцию
 		individualsArray[individualsCount-i].value = getArrayValue(getFrequencyInPercents(frequencyArray), frequencyFromFile)
 	}
 	sort.Sort(individualsArray)
@@ -169,9 +137,7 @@ func cleanPoppulation(individualsArray IndividualsArray, frequencyFromFile map[i
 				var parentKey = createParent()
 				var individual Individual
 				var decryptedString = decrypt(parentKey)
-				//косяк!!!
 				var frequencyArray = getFrequencyArray(decryptedString)
-				//здесь нужно получить массив биграмм декодированного сообщения и передать его в нижнюю функцию
 				individual.value = getArrayValue(getFrequencyInPercents(frequencyArray), frequencyFromFile)
 				individual.key = parentKey
 
@@ -183,7 +149,7 @@ func cleanPoppulation(individualsArray IndividualsArray, frequencyFromFile map[i
 }
 
 func mutate(individualsArray IndividualsArray,frequencyFromFile map[int64][]float64) {
-	for i := individualsCount-individualsCount/20; i < individualsCount; i++ {
+	for i := individualsCount-individualsCount/10; i < individualsCount; i++ {
 		individualsArray[i].key = swap(individualsArray[i].key)
 		var decryptedString = decrypt(individualsArray[i].key)
 		var frequencyArray = getFrequencyArray(decryptedString)
