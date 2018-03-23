@@ -49,18 +49,20 @@ func main() {
 			} else {
 			   counter++
 			}
-			if math.Mod(float64(counter), 15) == 0 {
+			if math.Mod(float64(counter), 5) == 0 && counter > 0{
 				cleanPoppulation(individualsArray, frequencyFromFile)
-				fmt.Println(individualsArray[0].value)
-				fmt.Println(decrypt(individualsArray[0].key))
 			}
-			if math.Mod(float64(counter), 25) == 0 {
+			if math.Mod(float64(counter), 10) == 0  && counter > 0 {
 				mutate(individualsArray, frequencyFromFile)
 			}
-			if counter > 200 {
+			if counter > 15 {
+				cleanPoppulation(individualsArray, frequencyFromFile)
 				bigMutation(individualsArray, frequencyFromFile)
 				counter = 0
 			}
+				fmt.Println(counter)
+				fmt.Println(individualsArray[0].value)
+				fmt.Println(decrypt(individualsArray[0].key))
 			if individualsArray[0].value < 50 {
 				fmt.Println(decrypt(individualsArray[0].key))
 				break

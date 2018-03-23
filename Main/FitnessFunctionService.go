@@ -59,7 +59,7 @@ func hatchIndividualKey(individual1 map[int64][]int64, individual2 map[int64][]i
 func updatePopulation(individualsArray IndividualsArray,frequencyFromFile map[int64][]float64) {
 
 	for i := 0; i < individualsCount/2; i++ {
-		var randomValue = rand.Intn(int(individualsCount/3))
+		var randomValue = rand.Intn(int(individualsCount/2))
 		var parentKey = hatchIndividualKey(individualsArray[i].key, individualsArray[i+ randomValue].key)
 		var individual Individual
 		var decryptedString = decrypt(parentKey)
@@ -67,36 +67,40 @@ func updatePopulation(individualsArray IndividualsArray,frequencyFromFile map[in
 		//здесь нужно получить массив биграмм декодированного сообщения и передать его в нижнюю функцию
 		individual.value = getArrayValue(getFrequencyInPercents(frequencyArray), frequencyFromFile)
 		individual.key = parentKey
-		individualsArray[i + individualsCount/2] = individual
+		CopyValue(individualsArray[i+ randomValue], individual)
 	}
 	sort.Sort(individualsArray)
+}
 
+func CopyValue (indiv1 Individual, indiv2 Individual) {
+	for i := 0; i < int(keySize); i++ {
+		for j := 0; j < int(keySize); j++ {
+			indiv1.key[int64(i)][j] = indiv2.key[int64(i)][j]
+		}
+	}
 }
 
 func swap(key map[int64][]int64) map[int64][]int64 {
-	var count = rand.Intn(int(matrixSize/2))
-	for k := 0; k < count/2; k++ {
 		var i1= rand.Intn(int(keySize))
 		var j1= rand.Intn(int(keySize))
 		var i2= rand.Intn(int(keySize))
 		var j2= rand.Intn(int(keySize))
 		key[int64(i1)][j1], key[int64(i2)][j2] = key[int64(i2)][j2], key[int64(i1)][j1]
-	}
-	return key
+		return key
 }
 
 func bigMutation(individualsArray IndividualsArray,frequencyFromFile map[int64][]float64) {
-
-	for i := individualsCount - individualsCount/20; i < individualsCount; i++ {
-		var parentKey = createParent()
-		var individual Individual
-		var decryptedString = decrypt(parentKey)
-		var frequencyArray = getFrequencyArray(decryptedString)
-		individual.value = getArrayValue(getFrequencyInPercents(frequencyArray), frequencyFromFile)
-		individual.key = parentKey
-		individualsArray[i] = individual
-	}
-	for i := 0; i < individualsCount - individualsCount/20; i++ {
+	//
+	//for i := individualsCount - individualsCount/10; i < individualsCount; i++ {
+	//	var parentKey = createParent()
+	//	var individual Individual
+	//	var decryptedString = decrypt(parentKey)
+	//	var frequencyArray = getFrequencyArray(decryptedString)
+	//	individual.value = getArrayValue(getFrequencyInPercents(frequencyArray), frequencyFromFile)
+	//	individual.key = parentKey
+	//	individualsArray[i] = individual
+	//}
+	for i := 0; i < individualsCount; i++ {
 		individualsArray[i].key = swap(individualsArray[i].key)
 		var decryptedString = decrypt(individualsArray[i].key)
 		var frequencyArray = getFrequencyArray(decryptedString)
