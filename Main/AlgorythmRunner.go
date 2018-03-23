@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	 //получаем массив частотности из файла (накопленная нами информация)
+	 //пример ключа, этим ключом можно дешифровать текст
 	//var mapp = map[int64][]int64{
 	//	5: {0, 1, 2, 3, 4, 5},
 	//	1: {6, 7, 8, 9, 10, 11},
@@ -24,19 +24,15 @@ func main() {
 	fullFrequencyJson, _ := json.Marshal(frequencyArray)
 	ioutil.WriteFile(frequencyArrayFileName, fullFrequencyJson, 0644)
 	var frequencyFromFile = getFrequencyInPercents(frequencyArray)
-	//начинаем генерировать 100 случайных ключей
 	var individualsArray IndividualsArray
 	for i := 0; i < individualsCount; i++ {
 		var parentKey= createParent()
 		var individual Individual
 		var decryptedString = decrypt(parentKey)
-		//косяк!!!
 		var frequencyArray= getFrequencyArray(decryptedString)
-		//здесь нужно получить массив биграмм декодированного сообщения и передать его в нижнюю функцию
 		individual.value = getArrayValue(getFrequencyInPercents(frequencyArray), frequencyFromFile)
 		individual.key = parentKey
 		individualsArray = append(individualsArray, individual)
-
 	}
 		var bestIndivid = 1000.0
 		var counter = 0

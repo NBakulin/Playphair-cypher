@@ -161,15 +161,3 @@ func getBigrammMapFromFile(fileName string) map[int64][]int64 {
 	return frequencyArray
 }
 
-func main132() {
-	//read file
-	inputFileString := readFile(txtFileName)
-	var changedFileString = formatInputString(inputFileString)
-	var frequencyArray = getFrequencyArrayFromFile(changedFileString)
-	fullFrequencyJson, _ := json.Marshal(frequencyArray)
-	ioutil.WriteFile(frequencyArrayFileName, fullFrequencyJson, 0644)
-	var frequencyInPercents = getFrequencyInPercents(frequencyArray)
-	fmt.Println(frequencyInPercents)
-	var value = getArrayValue(frequencyInPercents, frequencyInPercents)
-	fmt.Println(value)
-}
