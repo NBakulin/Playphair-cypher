@@ -4,11 +4,6 @@ import (
 	"testing"
 )
 
-//func TestRunner(t *testing.T) {
-//	TestCreateParent(t)
-//	TestIndividualsAreEqual(t)
-//}
-
 func TestCreateParent(t *testing.T) {
 	var parent = createParent()
 	var parentValues [int64(matrixSize)]int64
@@ -48,5 +43,37 @@ func TestFormatStrings(t *testing.T) {
  var checkString = "абв,:-ёё"
 	if formattedString != checkString {
 		t.Error("formatInputString func is not working well!")
+	}
+}
+
+func TestParseBigramms(t *testing.T) {
+	var firstLetter = rune('с'); var secondLetter = rune('о')
+	var key = map[int64][]int64{
+		5: {0, 1, 2, 3, 4, 5},
+		1: {6, 7, 8, 9, 10, 11},
+		2: {12, 13, 14, 15, 16, 17},
+		3: {18, 19, 20, 21, 22, 23},
+		4: {24, 25, 26, 27, 28, 29},
+		0: {30, 31, 32, 33, 34, 35} }
+	firstLetter, secondLetter = parseBigramm(firstLetter, secondLetter, key)
+	var firstCheckLetter = rune('н'); var secondCheckLetter = rune('р')
+	if firstLetter != firstCheckLetter || secondLetter != secondCheckLetter {
+		t.Error("parseBigramm func is not working well!" + " Just got " + string(firstLetter) + " and " + string(secondLetter) + " instead of " + string(firstCheckLetter) + " and " + string(secondCheckLetter))
+	}
+}
+
+func TestParseBigrammsBack(t *testing.T) {
+	var firstLetter = rune('н'); var secondLetter = rune('р')
+	var key = map[int64][]int64{
+		5: {0, 1, 2, 3, 4, 5},
+		1: {6, 7, 8, 9, 10, 11},
+		2: {12, 13, 14, 15, 16, 17},
+		3: {18, 19, 20, 21, 22, 23},
+		4: {24, 25, 26, 27, 28, 29},
+		0: {30, 31, 32, 33, 34, 35} }
+	firstLetter, secondLetter = parseBigrammBack(firstLetter, secondLetter, key)
+	var firstCheckLetter = rune('с'); var secondCheckLetter = rune('о')
+	if firstLetter != firstCheckLetter || secondLetter != secondCheckLetter {
+		t.Error("parseBigramm func is not working well!" + " Just got " + string(firstLetter) + " and " + string(secondLetter) + " instead of " + string(firstCheckLetter) + " and " + string(secondCheckLetter))
 	}
 }

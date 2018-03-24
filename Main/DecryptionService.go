@@ -36,7 +36,6 @@ func parseBigrammBack(firstEntryRune rune, secondEntryRune rune, keyMatrix map[i
 			}
 			return getRuneByNumber(secondRune), getRuneByNumber(firstRune)
 		} else {
-			//нет условия про одинаковые биграммы и нечётное количество биграмм в тексте до шифра
 			return getRuneByNumber(keyMatrix[i2][j1]), getRuneByNumber(keyMatrix[i1][j2])
 		}
 	}
