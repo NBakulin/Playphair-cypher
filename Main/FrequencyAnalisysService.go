@@ -83,7 +83,7 @@ func createFrequencyArrayFile() {
 
 func formatInputString(inputString string) string {
 	//regex to remove non-russian letters and four other characters
-	var regex = regexp.MustCompile("[^а-яА-Я\\-,:]*")
+	var regex = regexp.MustCompile("[^а-яА-ЯёЁ\\-,:]*")
 	//apply regex on string with replacing spaces
 	changedFileString := strings.Replace(regex.ReplaceAllString(inputString, ""), " ", "", -1)
 	//make all lower case ones
