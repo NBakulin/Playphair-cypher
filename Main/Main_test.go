@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestCreateParent(t *testing.T) {
+func TestCreateParentFail(t *testing.T) {
 	var parent = createParent()
 	var parentValues [int64(matrixSize)]int64
 	for i := 0; i < int(keySize); i++ {
@@ -19,11 +19,25 @@ func TestCreateParent(t *testing.T) {
 	}
 }
 
-func TestIndividualsAreEqual(t *testing.T) {
+func TestCreateParentSuccess(t *testing.T) {
+	var parent = createParent()
+	var parentValues [int64(matrixSize)]int64
+	for i := 0; i < int(keySize); i++ {
+		for j := 0; j < int(keySize); j++ {
+			parentValues[int64(parent[int64(i)][j])]++
+		}
+	}
+	for i := 0; i < int(matrixSize); i++ {
+		if parentValues[int64(i)] != 1 {
+			t.Error("Expected parent will have different values!")
+		}
+	}
+}
+
+func TestIndividualsAreEqualFail(t *testing.T) {
 	var individual Individual
 	individual.key = createParent()
-	var individual2 Individual
-	individual2.key = createParent()
+	var individual2 = individual
 	var flagNotTrue = false
 	for i := 0; i < int(keySize); i++ {
 		for j := 0; j < int(keySize); j++ {
@@ -37,7 +51,34 @@ func TestIndividualsAreEqual(t *testing.T) {
 	}
 }
 
-func TestFormatStrings(t *testing.T) {
+func TestIndividualsAreEqualSuccess(t *testing.T) {
+	var individual Individual
+	individual.key = createParent()
+	var individual2 Individual
+	individual2.key = createParent()
+	var flagNotTrue = false
+	for i := 0; i < int(keySize); i++ {
+		for j := 0; j < int(keySize); j++ {
+			if individual.key[int64(i)][j] != individual2.key[int64(i)][j] {
+				flagNotTrue = true
+			}
+		}
+	}
+	if flagNotTrue == areKeysEqual(individual, individual2) {
+		t.Error("areKeysEqual func is not working well!")
+	}
+}
+
+func TestFormatStringsFail(t *testing.T) {
+	var nonFormattedString = "абвABC,:-ёЁар"
+	var formattedString = formatInputString(nonFormattedString)
+	var checkString = "абв,:-ёё"
+	if formattedString == checkString {
+		t.Error("formatInputString func is not working well!")
+	}
+}
+
+func TestFormatStringsSuccess(t *testing.T) {
  var nonFormattedString = "абвABC,:-ёЁ"
  var formattedString = formatInputString(nonFormattedString)
  var checkString = "абв,:-ёё"
@@ -46,7 +87,23 @@ func TestFormatStrings(t *testing.T) {
 	}
 }
 
-func TestParseBigramms(t *testing.T) {
+func TestParseBigrammsFail(t *testing.T) {
+	var firstLetter = rune('с'); var secondLetter = rune('о')
+	var key = map[int64][]int64{
+		5: {0, 1, 2, 3, 4, 5},
+		1: {6, 7, 8, 9, 10, 11},
+		2: {12, 13, 14, 15, 16, 17},
+		3: {18, 19, 20, 21, 22, 23},
+		4: {24, 25, 26, 27, 28, 29},
+		0: {30, 31, 32, 33, 34, 35} }
+	firstLetter, secondLetter = parseBigramm(firstLetter, secondLetter, key)
+	var firstCheckLetter = rune('л'); var secondCheckLetter = rune('ш')
+	if firstLetter == firstCheckLetter || secondLetter == secondCheckLetter {
+		t.Error("parseBigramm func is not working well!" + " Just got " + string(firstLetter) + " and " + string(secondLetter) + " instead of " + string(firstCheckLetter) + " and " + string(secondCheckLetter))
+	}
+}
+
+func TestParseBigrammsSuccess(t *testing.T) {
 	var firstLetter = rune('с'); var secondLetter = rune('о')
 	var key = map[int64][]int64{
 		5: {0, 1, 2, 3, 4, 5},
@@ -57,12 +114,28 @@ func TestParseBigramms(t *testing.T) {
 		0: {30, 31, 32, 33, 34, 35} }
 	firstLetter, secondLetter = parseBigramm(firstLetter, secondLetter, key)
 	var firstCheckLetter = rune('н'); var secondCheckLetter = rune('р')
-	if firstLetter != firstCheckLetter || secondLetter != secondCheckLetter {
+	if firstLetter != firstCheckLetter && secondLetter != secondCheckLetter {
 		t.Error("parseBigramm func is not working well!" + " Just got " + string(firstLetter) + " and " + string(secondLetter) + " instead of " + string(firstCheckLetter) + " and " + string(secondCheckLetter))
 	}
 }
 
-func TestParseBigrammsBack(t *testing.T) {
+func TestParseBigrammsBackFail(t *testing.T) {
+	var firstLetter = rune('н'); var secondLetter = rune('р')
+	var key = map[int64][]int64{
+		5: {0, 1, 2, 3, 4, 5},
+		1: {6, 7, 8, 9, 10, 11},
+		2: {12, 13, 14, 15, 16, 17},
+		3: {18, 19, 20, 21, 22, 23},
+		4: {24, 25, 26, 27, 28, 29},
+		0: {30, 31, 32, 33, 34, 35} }
+	firstLetter, secondLetter = parseBigrammBack(firstLetter, secondLetter, key)
+	var firstCheckLetter = rune('р'); var secondCheckLetter = rune('о')
+	if firstLetter == firstCheckLetter && secondLetter == secondCheckLetter {
+		t.Error("parseBigramm func is not working well!" + " Just got " + string(firstLetter) + " and " + string(secondLetter) + " instead of " + string(firstCheckLetter) + " and " + string(secondCheckLetter))
+	}
+}
+
+func TestParseBigrammsBackSuccess(t *testing.T) {
 	var firstLetter = rune('н'); var secondLetter = rune('р')
 	var key = map[int64][]int64{
 		5: {0, 1, 2, 3, 4, 5},
@@ -78,7 +151,23 @@ func TestParseBigrammsBack(t *testing.T) {
 	}
 }
 
-func TestFindRuneIndex(t *testing.T) {
+func TestFindRuneIndexFail(t *testing.T) {
+	var firstLetter = rune('н')
+	var key = map[int64][]int64{
+		5: {0, 1, 2, 3, 4, 5},
+		1: {6, 7, 8, 9, 10, 11},
+		2: {12, 13, 14, 15, 16, 17},
+		3: {18, 19, 20, 21, 22, 23},
+		4: {24, 25, 26, 27, 28, 29},
+		0: {30, 31, 32, 33, 34, 35} }
+	var i, j = findRuneIndex(firstLetter,  key)
+	var i1 = 2; var j1 = 4
+	if i == int64(i1) && j == int64(j1) {
+		t.Error("parseBigramm func is not working well!" + " Just got " + string(i) + " and " + string(j) + " instead of " + string(i1) + " and " + string(j1))
+	}
+}
+
+func TestFindRuneIndexSuccess(t *testing.T) {
 	var firstLetter = rune('н')
 	var key = map[int64][]int64{
 		5: {0, 1, 2, 3, 4, 5},
@@ -94,7 +183,22 @@ func TestFindRuneIndex(t *testing.T) {
 	}
 }
 
-func TestEncrypt(t *testing.T) {
+func TestEncryptFail(t *testing.T) {
+	var key = map[int64][]int64{
+		5: {0, 1, 2, 3, 4, 5},
+		1: {6, 7, 8, 9, 10, 11},
+		2: {12, 13, 14, 15, 16, 17},
+		3: {18, 19, 20, 21, 22, 23},
+		4: {24, 25, 26, 27, 28, 29},
+		0: {30, 31, 32, 33, 34, 35} }
+	var output = encrypt(key)
+	var checkOutput = "дипоч"
+	if output == checkOutput {
+		t.Error("parseBigramm func is not working well!" + " Just got " + output + " instead of " + checkOutput)
+	}
+}
+
+func TestEncryptSuccess(t *testing.T) {
 	var key = map[int64][]int64{
 		5: {0, 1, 2, 3, 4, 5},
 		1: {6, 7, 8, 9, 10, 11},
@@ -109,7 +213,22 @@ func TestEncrypt(t *testing.T) {
 	}
 }
 
-func TestDecrypt(t *testing.T) {
+func TestDecryptFail(t *testing.T) {
+	var key = map[int64][]int64{
+		5: {0, 1, 2, 3, 4, 5},
+		1: {6, 7, 8, 9, 10, 11},
+		2: {12, 13, 14, 15, 16, 17},
+		3: {18, 19, 20, 21, 22, 23},
+		4: {24, 25, 26, 27, 28, 29},
+		0: {30, 31, 32, 33, 34, 35} }
+	var output = decrypt(key)
+	var checkOutput = "вкамиотви"
+	if output == checkOutput {
+		t.Error("parseBigramm func is not working well!" + " Just got " + output + " instead of " + checkOutput)
+	}
+}
+
+func TestDecryptSuccess(t *testing.T) {
 	var key = map[int64][]int64{
 		5: {0, 1, 2, 3, 4, 5},
 		1: {6, 7, 8, 9, 10, 11},
@@ -121,5 +240,33 @@ func TestDecrypt(t *testing.T) {
 	var checkOutput = "вконцеянваря,овеянныепервойоттепелью,хорошопахнутвишневыесадывполденьгде-нибудьвзатишкееслипригреваетсолнцегрустный,чутьвнятныйзапахвишневойкорыподнимаетсяспреснойсыростьюталогоснега,смогучимидревнимдухомпроглянувшейиз-подснега,из-подмертвойлиствыземлитонкиймногоцветныйароматустойчиводержитсянадсадамидоголубыхпотемок,допоры,поканепросунетсясквозьголызиныветвейкрытыйпрозеленьюрогмесяца,поканекинутнаснегжирующиезайцыопушенныхкрапинследовапотомветерпринесетвсадысостепногогребнятончайшеедыханиеопаленнойморозамиполыни,заглохнутдневныезапахиизвуки,ипочернобылу,побурьянам,повыцветшейнастерняхбрице,поволнистымбуграмзябинеслышно,серойволчицейпридетсвостоканочь,какследы,оставляязасобойпостепивыволочкисумеречныхтенейпокрайнемукстепипроулкуянварскимвечеромгодавъехалвхуторгремячийлогверховойвозлеречкионостановилусталого,курчавозаиневшеговпахахконя,спешилсянадчерньюсадов,тянувшихсяпообеимсторонамузкогопроулка,надостровамитополевыхлевадвысокостоялущербленныймесяцвпроулкебылотемноитихогде-тозаречкойголосистоподвываласобака,желтелогонеквсадникжаднохватнулноздрямиморозныйвоздух,неспешаснялперчатку,закурил,потомподтянулподпругу,сунулпальцыподпотники,ощутивгорячую,запотевшуюконскуюспину,ловковскинулвседлосвоебольшоетеломелкую,незамерзающуюизимойречушкусталпереезжатьвбродконь,глухозвякаяподковамипоустилавшимдноголышам,находупотянулсябылопить,новсадникзаторопилего,иконь,каяселезенкой,выскочилнапологийберегзаслышаввстречьсебеговорискрипполозьев,всадниксноваостановилконятотназвуксторожкодвинулушами,повернулсясеребряныйнагрудникиокованнаясеребромвысокаялукаказачьегоседла,попавподлучимесяца,вдругвспыхнуливтеменипроулкабелым,разящимблескомверховойкинулналукуповодья,торопливонаделвисевшийдоэтогонаплечахказачийбашлыкверблюжьейшерсти,закуталлицоипоскакалмашистойрысьюминовавподводу,онпо-прежнемупоехалшагом,нобашлыканеснялужвъехаввхутор,спросилувстречнойженщины:ану,скажи,тетка,гдетутувасяковостровновживетяковлукич-тонудаавотзатополемегокурень,крытыйчерепицей,видитевижуспасибовозлекрытогочерепицейпросторногокуреняспешился,ввелвкалиткуконяи,тихостукнуввокнорукоятьюплети,позвал:хозяиняковлукич,выйди-кана-час-на-часнаминуткубезшапки,пиджаквнапашку,хозяинвышелнакрыльцовсматриваясьвприезжего,сошелспорожковкогонелегкаяпринеслаулыбаясьвседеющиеусы,спросилоннеугадаешь,лукичночеватьпускайкудабыконяпоставитьвтеплоенет,дорогойтоварищ,непризначувынеизрикабудетенеизземотделачто-тоугадываюголосваш,сдаетсямне,будтознакомыйприезжий,морщабритыегубыулыбкой,раздвинулбашлыкполовцевапомнишьияковлукичвдругиспуганноозирнулсяпосторонам,побледнел,зашептал:вашеблагородиеоткельвасгосподинесауллошадкумызаразопределиммывконюшнюскольколет-томинулону-ну,тыпотишевременимногопрошлопопонкаестьутебявдомеутебячужихникогонетприезжийпередалповодхозяинуконь,ленивоповинуясьдвижениючужойруки,высокозадираяголовунавытянутойшееиусталоволочазадниеноги,пошелкконюшнеонзвонкостукнулкопытомподеревянномунастилу,всхрапнул,почуявобжитыйзапахчужойлошадирукачужогочеловекалегланаегохрап,пальцыумелоибережноосвободилинатертыедесныотпресногожелезаудил,иконьблагодарноприпалксенуподпругияемуотпустил,нехайпостоитоседланный,атрошкиохолонеттогдарасседлаю,говорилхозяин,заботливонакидываянаконянахолодавшуюпопонкуасам,ощупавседловку,ужеуспелопределитьпотому,какбылазатянутачересподушечнаяподпруга,какдоотказусвободнораспущенасоединяющаястременныеремнискошевка,чтогостьприехализдалекаизаэтотденьсделалнемалыйпробегзерно-товодитсяутебя,яковлукиччудокестьнапоим,дадимзернецану,пойдемтевкуреня,каквастеперичавеличатьинезнаюпо-старомуотвыкивроденеудобнонеловкоулыбалсявтемнотехозяин,хотяизнал,чтоулыбкаегоневидназовипоимени-отчествунезабылотвечалгость,первыйвыходяизконюшникакможновсюгерманскуювместесломали,ивэтупришлосьяобвасчастовспоминал,александранисимовичсэнтихпор,каквновороссийскомрасстрялисьсвами,ислухуобваснеимелиятакдумал,чтовывтурциюсказакамиуплыливошливжарконатопленнуюкухнюприезжийснялбашлыкибелогокурпяя-курпяйкурпеймерлушкапапаху,обнаживмогучийугловатыйчереп,прикрытыйредкимбелесымволосомиз-подкрутого,волчьегосклада,лысеющеголбаонбеглоогляделкомнатуи,улыбчивосощуривсветло-голубыеглазки,тяжкоблестевшиеизглубокихпроваловглазниц,поклонилсясидевшимналавкебабамхозяйкеиснохездоровоживете,бабочкиславабогу,сдержанноответилаемухозяйка,выжидательно,вопрошающеглянувнамужа:чтоэто,дескать,зачеловекатыпривеликакоеснимнужнообхождениесоберитеповечерять,короткоприказалхозяин,пригласивгостявгорницукстолугость,хлебаящисосвининой,вприсутствииженщинвелразговоропогоде,осослуживцахегоогромная,будтоизкамнятесанная,нижняячелюстьтруднодвигаласьжевалонмедленно,устало,какприморенныйбыкналежкепослеужинавстал,помолилсянаобразавзапыленныхбумажныхцветахи,стряхнувсостаренькой,теснойвплечахтолстовкихлебныекрошки,проговорил:спасибозахлеб-соль,яковлукичтеперьдавайпотолкуемснохаихозяйкаторопливопринялисостолаповинуясьдвижениюбровейхозяина,ушливкухнюглавасекретарьрайкомапартии,подслеповатыйивялыйвдвижениях,приселкстолу,искосапосмотревнадавыдова,и,жмурясь,собираяподглазамимешковатыескладки,сталчитатьегодокументызаокном,втелефонныхпроводах,свисталветер,наспинелошади,привязаннойнедоуздкомкпалисаднику,посамойкабаржинекособокопрогуливаласьичто-токлеваласорокаветерзаламывалейхвост,поднималнакрыло,ноонасновасадиласьнаспинустарческиизможденной,ковсемубезучастнойклячи,победновелапосторонамхищнымглазкомнадстаницейнизколетелирваныехлопьяоблаковизредкавпросветкосониспадалисолнечныелучи,вспыхивалпо-летнемусинийклочокнеба,итогдавидневшийсяизокнаизгибдона,лесзанимидальнийперевалскрохотнымветрякомнагоризонтеобреталиволнующуюмягкостьрисункатактызадержалсявростовепоболезнинучтожостальныевосемьдвадцатипятитысячниковприехалитридняназадмитингбылпредставителиколхозовихвстречалисекретарьдумающепожевалгубамисейчасунасособенносложнаяобстановкапроцентколлективизациипорайонучетырнадцатьивосемьдесятыхвсебольшетоз-тозтовариществопосовместнойобработкеземлизакулацко-зажиточнойчастьюещеосталисьхвостыпохлебозаготовкамнужнылюдиоч-ченьколхозыпосылализаявкинасороктрирабочих,априслаливастолькодевятьииз-подприпухлыхвеккак-топо-новому,пытливоидолго,посмотрелвзрачкидавыдову,словнооценивая,начтоспособенчеловектакты,дорогойтоварищ,сталобыть,слесарьоч-ченьхорошоанапутиловскомдавноработаешькурисдемобилизациидевятьлетдавыдовпротянулрукузапапироской,исекретарь,уловиввзглядомнакистидавыдоватусклуюсиневутатуировки,улыбнулсякраешкамиотви"
 	if output != checkOutput {
 		t.Error("parseBigramm func is not working well!" + " Just got " + output + " instead of " + checkOutput)
+	}
+}
+
+func TestGetKeyFail(t *testing.T) {
+	var individual Individual
+	var key = createParent()
+	individual.key = key
+	var output = getKey(individual)
+	for i := 0; i < int(keySize); i++ {
+		for j := 0; j < int(keySize); j++ {
+			if output[int64(i)][j] == 1000 {
+				t.Error("getKey func is not working well!")
+			}
+		}
+	}
+}
+
+func TestGetKeySuccess(t *testing.T) {
+	var individual Individual
+	var key = createParent()
+	individual.key = key
+	var output = getKey(individual)
+	for i := 0; i < int(keySize); i++ {
+		for j := 0; j < int(keySize); j++ {
+			if output[int64(i)][j] != key[int64(i)][j] {
+				t.Error("getKey func is not working well!")
+			}
+		}
 	}
 }
