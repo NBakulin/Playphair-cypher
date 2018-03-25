@@ -270,3 +270,62 @@ func TestGetKeySuccess(t *testing.T) {
 		}
 	}
 }
+
+func TestCreateEmptyBigrammArrayFail(t *testing.T) {
+	var bigrammArray = createEmptyBigrammArray();
+	bigrammArray[0][2] = 1
+	var flag = false
+	for i := 0; i < int(matrixSize); i++ {
+		for j := 0; j < int(matrixSize); j++ {
+			if bigrammArray[int64(i)][j] != 0 {
+				flag = true
+			}
+		}
+	}
+	if !flag {
+			t.Error("createEmptyBigrammArray func is not working well!")
+	}
+}
+
+func TestCreateEmptyBigrammArraySuccess(t *testing.T) {
+	var bigrammArray = createEmptyBigrammArray();
+		for i := 0; i < int(matrixSize); i++ {
+		for j := 0; j < int(matrixSize); j++ {
+			if bigrammArray[int64(i)][j] != 0 {
+				t.Error("createEmptyBigrammArray func is not working well!")
+			}
+		}
+	}
+}
+
+func TestFindFirstFail(t *testing.T) {
+	var key = map[int64][]int64{
+		5: {0, 1, 2, 3, 4, 5},
+		1: {6, 7, 8, 9, 10, 11},
+		2: {12, 13, 14, 15, 16, 17},
+		3: {18, 19, 20, 21, 22, 23},
+		4: {24, 25, 26, 27, 28, 29},
+		0: {30, 31, 32, 33, 34, 35}}
+	var firstI int64;
+	var firstJ int64
+	firstI, firstJ = findFirst(key, 5)
+	if firstI != 5 || firstJ != 5 {
+		t.Error("findFirst func is not working well!")
+	}
+}
+
+func TestFindFirstSuccess(t *testing.T) {
+	var key = map[int64][]int64{
+		5: {0, 1, 2, 3, 4, 5},
+		1: {6, 7, 8, 9, 10, 11},
+		2: {12, 13, 14, 15, 16, 17},
+		3: {18, 19, 20, 21, 22, 23},
+		4: {24, 25, 26, 27, 28, 29},
+		0: {30, 31, 32, 33, 34, 35}}
+	var firstI int64;
+	var firstJ int64
+	firstI, firstJ = findFirst(key, 15)
+	if firstI == 2 && firstJ == 0 {
+		t.Error("findFirst func is not working well!")
+	}
+}
